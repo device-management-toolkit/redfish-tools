@@ -5,9 +5,10 @@
 # Redfish API Generation Variables
 MAIN_OPENAPI := ../dmtf/openapi.yaml
 MERGED_OPENAPI := ../merged/redfish-openapi.yaml
-GENERATED_SPEC := ../../internal/controller/http/v1/generated/spec.gen.go
-GENERATED_TYPES := ../../internal/controller/http/v1/generated/types.gen.go
-GENERATED_SERVER := ../../internal/controller/http/v1/generated/server.gen.go
+CONSOLE_REPO := ../../../console
+GENERATED_SPEC := $(CONSOLE_REPO)/redfish/internal/controller/http/v1/generated/spec.gen.go
+GENERATED_TYPES := $(CONSOLE_REPO)/redfish/internal/controller/http/v1/generated/types.gen.go
+GENERATED_SERVER := $(CONSOLE_REPO)/redfish/internal/controller/http/v1/generated/server.gen.go
 MERGE_SCRIPT := merge-redfish-openapi.py
 # Tool versions
 OAPI_CODEGEN_VERSION := github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.1
@@ -72,21 +73,21 @@ rf-generate: $(GENERATED_SPEC) $(GENERATED_TYPES) $(GENERATED_SERVER) ### Genera
 $(GENERATED_SPEC): $(MERGED_OPENAPI)
 	$(call check_ubuntu)
 	@echo "🔄 Generating OpenAPI spec Go code..."
-	@mkdir -p ../../internal/controller/http/v1/generated
+	@mkdir -p $(CONSOLE_REPO)/redfish/internal/controller/http/v1/generated
 	oapi-codegen -generate spec -o $(GENERATED_SPEC) -package generated $(MERGED_OPENAPI)
 	@echo "✅ Generated spec code: $(GENERATED_SPEC)"
 
 $(GENERATED_TYPES): $(MERGED_OPENAPI)
 	$(call check_ubuntu)
 	@echo "🔄 Generating types Go code..."
-	@mkdir -p ../../internal/controller/http/v1/generated
+	@mkdir -p $(CONSOLE_REPO)/redfish/internal/controller/http/v1/generated
 	oapi-codegen -generate types -o $(GENERATED_TYPES) -package generated $(MERGED_OPENAPI)
 	@echo "✅ Generated types code: $(GENERATED_TYPES)"
 
 $(GENERATED_SERVER): $(MERGED_OPENAPI)
 	$(call check_ubuntu)
 	@echo "🔄 Generating server Go code..."
-	@mkdir -p ../../internal/controller/http/v1/generated
+	@mkdir -p $(CONSOLE_REPO)/redfish/internal/controller/http/v1/generated
 	oapi-codegen -generate gin,strict-server -o $(GENERATED_SERVER) -package generated $(MERGED_OPENAPI)
 	@echo "✅ Generated server code: $(GENERATED_SERVER)"
 
