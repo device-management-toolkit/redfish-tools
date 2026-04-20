@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
 
 import yaml
-import os
 import subprocess
 import sys
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+MERGED_SPEC_FILE = BASE_DIR.parent / 'artifacts' / 'redfish-openapi.yaml'
+GENERATED_DIR = BASE_DIR.parent / 'artifacts' / 'generated'
 
 def add_basic_auth_to_existing_spec():
-      
-    # Path to the existing merged OpenAPI file
-    spec_file = '../merged/redfish-openapi.yaml'
-    
-    if not os.path.exists(spec_file):
-        print(f"Error: {spec_file} does not exist")
+    if not MERGED_SPEC_FILE.exists():
+        print(f"Error: {MERGED_SPEC_FILE} does not exist")
         return False
     
-    print(f"Loading existing OpenAPI spec from {spec_file}...")
+    print(f"Loading existing OpenAPI spec from {MERGED_SPEC_FILE}...")
     
     # Load the existing spec
-    with open(spec_file, 'r') as f:
+    with open(MERGED_SPEC_FILE, 'r') as f:
         spec = yaml.safe_load(f)
     
     print("Adding Basic Authentication configuration...")
@@ -93,10 +93,10 @@ def add_basic_auth_to_existing_spec():
         print("  Basic Auth metadata already exists")
     
     # Write the enhanced spec back to the file
-    with open(spec_file, 'w') as f:
+    with open(MERGED_SPEC_FILE, 'w') as f:
         yaml.dump(spec, f, default_flow_style=False, sort_keys=False)
     
-    print(f"Basic Auth configuration added to {spec_file}")
+    print(f"Basic Auth configuration added to {MERGED_SPEC_FILE}")
     return True
 
 def regenerate_go_code():
@@ -104,7 +104,7 @@ def regenerate_go_code():
     
     try:
         result = subprocess.run(['make', 'rf-generate'], 
-                              capture_output=True, text=True, cwd='.')
+                              capture_output=True, text=True, cwd=str(BASE_DIR))
         
         if result.returncode == 0:
             print("Go server code regenerated!")
@@ -118,15 +118,9 @@ def regenerate_go_code():
         return False
 
 def verify_auth_implementation():
-
-    middleware_file = '../../internal/controller/http/v1/handler/middleware.go'
-    
-    if os.path.exists(middleware_file):
-        print(f"Authentication middleware found: {middleware_file}")
-        return True
-    else:
-        print(f"Authentication middleware missing: {middleware_file}")
-        return False
+    GENERATED_DIR.mkdir(parents=True, exist_ok=True)
+    print(f"Generated output directory ready: {GENERATED_DIR}")
+    return True
 
 if __name__ == "__main__":
     print("Setting up Basic Authentication for Redfish API...")

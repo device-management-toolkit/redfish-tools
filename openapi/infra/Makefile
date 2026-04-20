@@ -4,11 +4,16 @@
 
 # Redfish API Generation Variables
 MAIN_OPENAPI := ../dmtf/openapi.yaml
-MERGED_OPENAPI := ../merged/redfish-openapi.yaml
-GENERATED_SPEC := ../../internal/controller/http/v1/generated/spec.gen.go
-GENERATED_TYPES := ../../internal/controller/http/v1/generated/types.gen.go
-GENERATED_SERVER := ../../internal/controller/http/v1/generated/server.gen.go
+ARTIFACTS_DIR := ../artifacts
+MERGED_OPENAPI := $(ARTIFACTS_DIR)/redfish-openapi.yaml
+GENERATED_DIR := $(ARTIFACTS_DIR)/generated
+GENERATED_SPEC := $(GENERATED_DIR)/spec.gen.go
+GENERATED_TYPES := $(GENERATED_DIR)/types.gen.go
+GENERATED_SERVER := $(GENERATED_DIR)/server.gen.go
 MERGE_SCRIPT := merge-redfish-openapi.py
+INFRA_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+# Console repo path - required: make rf-integration-test CONSOLE_REPO=/path/to/console
+CONSOLE_REPO ?=
 # Tool versions
 OAPI_CODEGEN_VERSION := github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.1
 
@@ -53,40 +58,40 @@ help: ## Display this help screen
 
 ##@ Redfish API Generation
 
-rf-merge: ### Merge YAML files into single OpenAPI specification
+rf-merge: ### Merge YAML files into single OpenAPI specification (local artifacts only)
 	$(call check_ubuntu)
 	@echo "🔄 Merging YAML files into single OpenAPI specification..."
 	python3 $(MERGE_SCRIPT)
-	@echo "✅ Merged OpenAPI spec created: $(MERGED_OPENAPI)"
+	@echo "✅ Merged OpenAPI spec created in artifacts: $(MERGED_OPENAPI)"
 .PHONY: rf-merge
 
 $(MERGED_OPENAPI): $(YAML_SOURCES) $(MERGE_SCRIPT)
 	@echo "🔄 Merging YAML files into single OpenAPI specification..."
 	python3 $(MERGE_SCRIPT)
-	@echo "✅ Merged OpenAPI spec created: $(MERGED_OPENAPI)"
+	@echo "✅ Merged OpenAPI spec created in artifacts: $(MERGED_OPENAPI)"
 
-rf-generate: $(GENERATED_SPEC) $(GENERATED_TYPES) $(GENERATED_SERVER) ### Generate Go server code from merged OpenAPI spec
+rf-generate: $(GENERATED_SPEC) $(GENERATED_TYPES) $(GENERATED_SERVER) ### Generate Go server code into local artifacts
 	$(call check_ubuntu)
 .PHONY: rf-generate
 
 $(GENERATED_SPEC): $(MERGED_OPENAPI)
 	$(call check_ubuntu)
 	@echo "🔄 Generating OpenAPI spec Go code..."
-	@mkdir -p ../../internal/controller/http/v1/generated
+	@mkdir -p $(GENERATED_DIR)
 	oapi-codegen -generate spec -o $(GENERATED_SPEC) -package generated $(MERGED_OPENAPI)
 	@echo "✅ Generated spec code: $(GENERATED_SPEC)"
 
 $(GENERATED_TYPES): $(MERGED_OPENAPI)
 	$(call check_ubuntu)
 	@echo "🔄 Generating types Go code..."
-	@mkdir -p ../../internal/controller/http/v1/generated
+	@mkdir -p $(GENERATED_DIR)
 	oapi-codegen -generate types -o $(GENERATED_TYPES) -package generated $(MERGED_OPENAPI)
 	@echo "✅ Generated types code: $(GENERATED_TYPES)"
 
 $(GENERATED_SERVER): $(MERGED_OPENAPI)
 	$(call check_ubuntu)
 	@echo "🔄 Generating server Go code..."
-	@mkdir -p ../../internal/controller/http/v1/generated
+	@mkdir -p $(GENERATED_DIR)
 	oapi-codegen -generate gin,strict-server -o $(GENERATED_SERVER) -package generated $(MERGED_OPENAPI)
 	@echo "✅ Generated server code: $(GENERATED_SERVER)"
 
@@ -198,10 +203,10 @@ rf-validate: $(MERGED_OPENAPI) ### Validate OpenAPI specification
 	fi
 .PHONY: rf-validate
 
-rf-clean: ### Clean generated files
+rf-clean: ### Clean local artifacts
 	@echo "🧹 Cleaning generated files..."
-	@rm -f $(GENERATED_SPEC) $(GENERATED_TYPES) $(GENERATED_SERVER) $(MERGED_OPENAPI)
-	@echo "✅ Cleaned generated files"
+	@rm -rf $(ARTIFACTS_DIR)
+	@echo "✅ Cleaned local artifacts"
 .PHONY: rf-clean
 
 rf-auth: ### Add Basic Auth to OpenAPI spec and regenerate Go code
@@ -214,13 +219,28 @@ rf-all: rf-merge rf-generate rf-validate rf-auth rf-metadata-generate ### Run al
 	@echo "✅ All Redfish API generation steps completed"
 .PHONY: rf-all
 
-rf-metadata-generate: ### Generate metadata.xml from DMTF schemas
-	@echo "📥 Generating metadata.xml from DMTF schemas..."
+rf-metadata-generate: ### Generate metadata.xml from DMTF schemas (local artifacts only)
+	@echo "📥 Generating metadata.xml in artifacts from DMTF schemas..."
 	python3 metadata-generate.py
 	@echo "✅ Metadata generation completed"
 .PHONY: rf-metadata-generate
 
 rf-integration-test: ### Run Redfish API integration tests with Newman
 	@echo "🧪 Running Redfish API integration tests..."
-	@cd ../../.. && bash redfish/tests/run_tests.sh
+	@echo "Console repo: $(CONSOLE_REPO)"
+	@if [ -z "$(CONSOLE_REPO)" ]; then \
+		echo "❌ CONSOLE_REPO is not set."; \
+		echo "💡 Example:"; \
+		echo "   make rf-integration-test CONSOLE_REPO=/path/to/console"; \
+		exit 1; \
+	fi; \
+	TEST_RUNNER="$(CONSOLE_REPO)/redfish/tests/run_tests.sh"; \
+	if [ -f "$$TEST_RUNNER" ]; then \
+		cd "$(CONSOLE_REPO)" && bash redfish/tests/run_tests.sh; \
+	else \
+		echo "❌ Integration test runner not found at $$TEST_RUNNER"; \
+		echo "💡 Set CONSOLE_REPO to your Console checkout:"; \
+		echo "   make rf-integration-test CONSOLE_REPO=/path/to/console"; \
+		exit 1; \
+	fi
 .PHONY: rf-integration-test

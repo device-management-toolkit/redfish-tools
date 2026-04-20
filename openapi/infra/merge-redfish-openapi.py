@@ -3,7 +3,10 @@ import yaml
 import os
 import glob
 import re
-from pathlib import Path
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DMTF_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, '..', 'dmtf'))
+ARTIFACTS_DIR = os.path.normpath(os.path.join(SCRIPT_DIR, '..', 'artifacts'))
 
 def remove_version_from_schema_name(schema_name):
     """Remove version information from schema name (e.g., Message_v1_2_1_Message -> Message_Message)"""
@@ -48,7 +51,7 @@ def convert_file_refs_to_internal(obj):
 
 def merge_openapi_files():
     # Load the main OpenAPI file
-    main_openapi_path = '../dmtf/openapi.yaml'
+    main_openapi_path = os.path.join(DMTF_DIR, 'openapi.yaml')
 
     if not os.path.exists(main_openapi_path):
         # If main openapi.yaml doesn't exist, create a basic structure
@@ -76,7 +79,7 @@ def merge_openapi_files():
         main_spec['components']['schemas'] = {}
 
     # Find all YAML schema files in the ../dmtf directory
-    yaml_files = glob.glob('../dmtf/*.yaml')
+    yaml_files = glob.glob(os.path.join(DMTF_DIR, '*.yaml'))
     yaml_files = [f for f in yaml_files if f != main_openapi_path]
 
     print(f"Found {len(yaml_files)} schema files to merge:")
@@ -144,10 +147,10 @@ def merge_openapi_files():
             del main_spec['paths']['/redfish/v1/']
 
     # Create output directory if it doesn't exist
-    os.makedirs('../merged', exist_ok=True)
+    os.makedirs(ARTIFACTS_DIR, exist_ok=True)
 
     # Write the merged file
-    output_path = '../merged/redfish-openapi.yaml'
+    output_path = os.path.join(ARTIFACTS_DIR, 'redfish-openapi.yaml')
     with open(output_path, 'w') as f:
         yaml.dump(main_spec, f, default_flow_style=False, sort_keys=False)
 

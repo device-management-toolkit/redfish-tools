@@ -132,12 +132,7 @@ def generate_metadata_xml(discovered_schemas: Dict[str, Dict]) -> bool:
     metadata_path = os.path.join(
         os.path.dirname(__file__),
         "..",
-        "..",
-        "internal",
-        "controller",
-        "http",
-        "v1",
-        "handler",
+        "artifacts",
         "metadata.xml"
     )
     

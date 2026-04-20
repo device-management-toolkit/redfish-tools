@@ -1,0 +1,6 @@
+# Local generation artifacts (not committed in this repo)
+openapi/artifacts/
+
+# Legacy generated outputs removed from tracking
+openapi/merged/redfish-openapi.yaml
+internal/controller/http/v1/generated/*.gen.go
