@@ -1,6 +1,23 @@
 # Redfish Developer's Guide
 
-This guide is adapted from the Console Redfish Developer's Guide wiki and customized for this repository.
+## Table of Contents
+
+- [Scope](#scope)
+- [System Requirements](#system-requirements)
+- [Quick Start](#quick-start)
+- [Makefile Reference](#makefile-reference)
+- [Development Workflow](#development-workflow)
+- [Integration Testing](#integration-testing)
+- [Additional Resources](#additional-resources)
+- [Developing New Redfish Integration Tests](#developing-new-redfish-integration-tests)
+- [Test Organization Best Practices](#test-organization-best-practices)
+- [Advanced Testing Techniques](#advanced-testing-techniques)
+- [Debugging Tests](#debugging-tests)
+- [Continuous Integration](#continuous-integration)
+- [Common Pitfalls](#common-pitfalls)
+- [Test Maintenance](#test-maintenance)
+- [Resources](#resources)
+- [Examples](#examples)
 
 ## Scope
 
@@ -10,40 +27,10 @@ This repository focuses on Redfish OpenAPI tooling and DMTF schema sources.
 - Tooling scripts and Make targets: `openapi/infra`
 - Local generated outputs (not committed): `openapi/artifacts`
 
-Integration tests are executed through the sibling Console repository runner:
+Integration tests require the Console repository. Set `CONSOLE_REPO` to point to your local checkout:
 
-- `../natalie/console/redfish/tests/run_tests.sh`
-
-## Automation: PR To Console Redfish Branch
-
-This repository includes a GitHub Actions workflow that can replace the manual sync step.
-
-Workflow file:
-
-- `.github/workflows/sync-console-redfish-pr.yml`
-
-What it does:
-
-1. Triggers when a pull request that changes `openapi/dmtf/**` is merged, or when manually started from the Actions tab.
-2. Regenerates local artifacts using `make -C openapi/infra rf-all`.
-3. Checks out `device-management-toolkit/console` on the `redfish` branch.
-4. Copies generated files into the Console redfish tree at:
-    - `redfish/openapi/merged/redfish-openapi.yaml`
-    - `redfish/internal/controller/http/v1/generated/spec.gen.go`
-    - `redfish/internal/controller/http/v1/generated/types.gen.go`
-    - `redfish/internal/controller/http/v1/generated/server.gen.go`
-5. Opens an automated PR targeting the Console `redfish` branch.
-
-Required repository secret:
-
-- `CONSOLE_REPO_TOKEN`: PAT (or fine-grained token) with permissions to push branches and open pull requests in `device-management-toolkit/console`.
-
-Notes:
-
-- If there are no generated changes, no PR is created.
-- The workflow is intentionally scoped to merged PRs that modify DMTF schema sources.
-- You can test it immediately with the `workflow_dispatch` manual trigger in GitHub Actions.
-- The workflow fails immediately with a clear error if `CONSOLE_REPO_TOKEN` is not configured.
+- Example: `/path/to/console/redfish/tests/run_tests.sh`
+- Run with: `make -C openapi/infra rf-integration-test CONSOLE_REPO=/path/to/console`
 
 ## System Requirements
 
@@ -98,13 +85,13 @@ make rf-all
 Run integration tests:
 
 ```bash
-make rf-integration-test
+make -C openapi/infra rf-integration-test CONSOLE_REPO=/path/to/console
 ```
 
 Custom test port example:
 
 ```bash
-HTTP_PORT=9090 make rf-integration-test
+HTTP_PORT=9090 make rf-integration-test CONSOLE_REPO=/path/to/console
 ```
 
 ## Makefile Reference
@@ -138,7 +125,7 @@ HTTP_PORT=9090 make rf-integration-test
 
 From repository root:
 
-- `make -C openapi/infra rf-integration-test`
+- `make -C openapi/infra rf-integration-test CONSOLE_REPO=/path/to/console`
 
 ## Development Workflow
 
@@ -171,7 +158,7 @@ From repository root:
 5. Run tests:
 
      ```bash
-     make rf-integration-test
+    make -C openapi/infra rf-integration-test CONSOLE_REPO=/path/to/console
      ```
 
 ### Individual Steps (Advanced)
@@ -202,14 +189,13 @@ Integration tests provide black-box HTTP API validation for Redfish behavior and
 From this repository:
 
 ```bash
-cd openapi/infra
-make rf-integration-test
+make -C openapi/infra rf-integration-test CONSOLE_REPO=/path/to/console
 ```
 
-From sibling Console repository directly:
+From Console repository directly:
 
 ```bash
-cd ../natalie/console
+cd /path/to/console
 bash redfish/tests/run_tests.sh
 ```
 
@@ -244,7 +230,7 @@ Functional coverage:
 ### Test Reports
 
 - CLI output: terminal output
-- JSON report: `../natalie/console/redfish/tests/postman/results/newman-report.json`
+- JSON report: `/path/to/console/redfish/tests/postman/results/newman-report.json`
 - Server log: `/tmp/redfish_test_server.log`
 
 ### Troubleshooting
@@ -290,10 +276,10 @@ Integration tests use Newman collections in sibling Console repository to valida
 
 Primary components (sibling Console repository):
 
-1. Collection: `../natalie/console/redfish/tests/postman/redfish-collection.json`
-2. Environment: `../natalie/console/redfish/tests/postman/test-environment.json`
-3. Runner script: `../natalie/console/redfish/tests/run_tests.sh`
-4. Mock repository: `../natalie/console/redfish/internal/mocks/mock_repo.go`
+1. Collection: `/path/to/console/redfish/tests/postman/redfish-collection.json`
+2. Environment: `/path/to/console/redfish/tests/postman/test-environment.json`
+3. Runner script: `/path/to/console/redfish/tests/run_tests.sh`
+4. Mock repository: `/path/to/console/redfish/internal/mocks/mock_repo.go`
 
 ### Running Tests
 
@@ -301,13 +287,13 @@ Recommended from this repository:
 
 ```bash
 cd openapi/infra
-make rf-integration-test
+make rf-integration-test CONSOLE_REPO=/path/to/console
 ```
 
 Direct Newman execution from sibling Console repository:
 
 ```bash
-cd ../natalie/console
+cd /path/to/console
 newman run redfish/tests/postman/redfish-collection.json \
     --environment redfish/tests/postman/test-environment.json
 ```
@@ -373,18 +359,18 @@ Step 4: Organize folders
 
 Step 5: Update mock data if required
 
-- Modify `../natalie/console/redfish/internal/mocks/mock_repo.go`
+- Modify `/path/to/console/redfish/internal/mocks/mock_repo.go`
 
 Step 6: Test locally
 
 ```bash
 cd openapi/infra
-make rf-integration-test
+make rf-integration-test CONSOLE_REPO=/path/to/console
 ```
 
 Step 7: Update environment variables if needed
 
-- Add new keys to `../natalie/console/redfish/tests/postman/test-environment.json`
+- Add new keys to `/path/to/console/redfish/tests/postman/test-environment.json`
 
 ## Test Organization Best Practices
 
@@ -464,14 +450,14 @@ cat /tmp/redfish_test_server.log
 Run one folder only:
 
 ```bash
-cd ../natalie/console/redfish/tests/postman
+cd /path/to/console/redfish/tests/postman
 newman run redfish-collection.json --environment test-environment.json --folder "Power Control Actions"
 ```
 
 Verbose Newman output:
 
 ```bash
-cd ../natalie/console/redfish/tests/postman
+cd /path/to/console/redfish/tests/postman
 newman run redfish-collection.json --environment test-environment.json --verbose
 ```
 
@@ -601,28 +587,3 @@ Keep tests aligned with API spec:
     ]
 }
 ```
-
-## Contributing
-
-When contributing test updates:
-
-1. Follow current organization and naming patterns
-2. Cover both success and failure paths
-3. Document any new environment variables
-4. Update mock data when behavior depends on fixtures
-5. Ensure tests pass locally before opening PR
-6. Include test updates in the same PR as API changes
-
-## Questions
-
-If tests fail unexpectedly:
-
-1. Re-run with verbose Newman output
-2. Check `/tmp/redfish_test_server.log`
-3. Verify tool versions and port availability
-4. Include command output and failure details when reporting issues
-
-## Repository Notes
-
-- Helper scripts in `openapi/infra` now resolve paths based on script location, so they work even when invoked from repository root.
-- Integration tests still require the sibling Console checkout at `../natalie/console` because this repository contains tooling and schema sources, not the executable server test harness.
