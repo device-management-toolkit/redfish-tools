@@ -51,11 +51,11 @@ jobs:
 
       - name: Install tool dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install PyYAML
+          python3 -m pip install --upgrade pip==24.3.1
+          python3 -m pip install PyYAML==6.0.2
           go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.5.1
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
-          npm install -g @apidevtools/swagger-cli
+          npm install -g @apidevtools/swagger-cli@4.0.4
 
       - name: Generate Redfish artifacts
         run: make -C openapi/infra rf-all
