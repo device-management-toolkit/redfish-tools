@@ -57,29 +57,51 @@ def add_basic_auth_to_existing_spec():
     
     # Configure endpoint security (only if not already configured)
     if 'paths' in spec:
-        # Public endpoints (Redfish spec compliance)
-        public_endpoints = ['/redfish/v1/', '/redfish/v1/$metadata', '/redfish/v1/odata']
+        # Public endpoints (entire endpoint is public, all methods)
+        public_endpoints = [
+            '/redfish',
+            '/redfish/v1/',
+            '/redfish/v1/$metadata',
+            '/redfish/v1/odata',
+            '/redfish/v1/SessionService/Sessions/Members',
+        ]
+        
+        # Public methods on specific endpoints (mixed protection)
+        public_methods = {
+            '/redfish/v1/SessionService/Sessions': ['post'],  # POST allows unauthenticated login
+        }
         
         for endpoint in public_endpoints:
             if endpoint in spec['paths']:
-                for method in spec['paths'][endpoint]:
-                    if method.lower() in ['get', 'head', 'options']:
-                        if 'security' not in spec['paths'][endpoint][method]:
-                            spec['paths'][endpoint][method]['security'] = [{}]
-                            print(f"  Set {endpoint} {method.upper()} as public (no auth)")
+                for method, method_spec in spec['paths'][endpoint].items():
+                    if method.lower() in ['get', 'head', 'options', 'post', 'put', 'patch', 'delete']:
+                        # Public endpoints should always remain explicitly unauthenticated.
+                        method_spec['security'] = [{}]
+                        print(f"  Set {endpoint} {method.upper()} as public (no auth)")
         
-        # Add auth requirement to protected endpoints (only if not already configured)
+        # Public methods on mixed endpoints
+        for endpoint, methods in public_methods.items():
+            if endpoint in spec['paths']:
+                for method in methods:
+                    if method in spec['paths'][endpoint]:
+                        spec['paths'][endpoint][method]['security'] = [{}]
+                        print(f"  Set {endpoint} {method.upper()} as public (no auth)")
+        
+        # Enforce auth requirement on all protected endpoints (always enforce, never mixed)
         protected_count = 0
         for path, path_spec in spec['paths'].items():
             if path not in public_endpoints:
                 for method, method_spec in path_spec.items():
                     if method.lower() in ['get', 'post', 'put', 'patch', 'delete']:
-                        if 'security' not in method_spec:
-                            method_spec['security'] = [{'BasicAuth': []}]
-                            protected_count += 1
+                        # Skip methods that have been explicitly marked as public
+                        if path in public_methods and method.lower() in public_methods[path]:
+                            continue
+                        # Always enforce pure BasicAuth on protected endpoints (overwrite mixed security)
+                        method_spec['security'] = [{'BasicAuth': []}]
+                        protected_count += 1
         
         if protected_count > 0:
-            print(f"  Added BasicAuth requirement to {protected_count} protected endpoints")
+            print(f"  Set BasicAuth requirement on {protected_count} protected endpoints (pure, no mixed auth)")
     
     # Add global Basic Auth metadata (only if not already present)
     if 'x-basic-auth' not in spec:
