@@ -55,12 +55,14 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  v1:
-                    type: string
-                    example: /redfish/v1/
+                $ref: http://redfish.dmtf.org/schemas/v1/ServiceRoot.v1_19_0.yaml#/components/schemas/ServiceRoot_v1_19_0_RedfishVersionDiscovery
           description: Redfish protocol version discovery endpoint
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedfishError'
+          description: Error condition
   /redfish/v1/:
     get:
       responses:
@@ -195,14 +197,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: http://redfish.dmtf.org/schemas/v1/Session.v1_8_0.yaml#/components/schemas/Session_v1_8_0_Session
+              $ref: http://redfish.dmtf.org/schemas/v1/SessionCollection.yaml#/components/schemas/SessionCollection_SessionMember
         required: true
       responses:
         '201':
           content:
             application/json:
               schema:
-                $ref: http://redfish.dmtf.org/schemas/v1/Session.v1_8_0.yaml#/components/schemas/Session_v1_8_0_Session
+                $ref: http://redfish.dmtf.org/schemas/v1/SessionCollection.yaml#/components/schemas/SessionCollection_SessionMember
           description: A resource of type Session has been created (OData Members endpoint)
         '204':
           description: Success, but no response data

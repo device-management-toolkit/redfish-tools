@@ -1,5 +1,15 @@
 components:
   schemas:
+    ServiceRoot_v1_19_0_RedfishVersionDiscovery:
+      description: The Redfish version discovery payload.
+      properties:
+        v1:
+          description: Link to the Redfish service root.
+          type: string
+          example: /redfish/v1/
+      required:
+      - v1
+      type: object
     ServiceRoot_v1_19_0_Links:
       additionalProperties: false
       description: The links to other resources that are related to this resource.

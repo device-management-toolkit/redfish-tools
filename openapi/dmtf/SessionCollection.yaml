@@ -1,5 +1,9 @@
 components:
   schemas:
+    SessionCollection_SessionMember:
+      description: A `Session` resource payload used by the Sessions Members endpoint.
+      allOf:
+      - $ref: http://redfish.dmtf.org/schemas/v1/Session.v1_8_0.yaml#/components/schemas/Session_v1_8_0_Session
     SessionCollection_SessionCollection:
       additionalProperties: false
       description: The collection of `Session` resource instances.
