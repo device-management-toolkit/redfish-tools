@@ -1,5 +1,25 @@
 components:
   schemas:
+    EmptyActionRequest:
+      additionalProperties: false
+      description: Empty JSON body for Redfish action invocation.
+      properties: {}
+      type: object
+    GenerateRedirectionTokenResponse:
+      additionalProperties: false
+      description: The response payload containing a short-lived redirection token.
+      properties:
+        ExpirationTime:
+          description: The token expiration time in RFC3339 format.
+          format: date-time
+          type: string
+        RedirectionToken:
+          description: A short-lived token used for WebSocket redirection authentication.
+          type: string
+      required:
+      - RedirectionToken
+      - ExpirationTime
+      type: object
     RedfishError:
       description: The error payload from a Redfish service.
       properties:
@@ -336,6 +356,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/RedfishError'
           description: The response contains the results of the Reset action
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedfishError'
+          description: Error condition
+  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/IntelComputerSystem.GenerateRedirectionToken:
+    parameters:
+    - description: The value of the Id property of the ComputerSystem resource
+      in: path
+      name: ComputerSystemId
+      required: true
+      schema:
+        type: string
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmptyActionRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateRedirectionTokenResponse'
+          description: The response contains a generated redirection token
         default:
           content:
             application/json:
