@@ -26,13 +26,23 @@ jobs:
 
       - name: Validate required secret
         env:
-          CONSOLE_REPO_TOKEN: ${{ secrets.CONSOLE_REPO_TOKEN }}
+          CONSOLE_APP_ID: ${{ secrets.CONSOLE_APP_ID }}
+          CONSOLE_APP_PRIVATE_KEY: ${{ secrets.CONSOLE_APP_PRIVATE_KEY }}
         run: |
-          if [ -z "$CONSOLE_REPO_TOKEN" ]; then
-            echo "CONSOLE_REPO_TOKEN is not configured."
-            echo "Add this repository secret before running the workflow."
+          if [ -z "$CONSOLE_APP_ID" ] || [ -z "$CONSOLE_APP_PRIVATE_KEY" ]; then
+            echo "CONSOLE_APP_ID and/or CONSOLE_APP_PRIVATE_KEY are not configured."
+            echo "Add these repository secrets before running the workflow."
             exit 1
           fi
+
+      - name: Generate GitHub App token for console repo
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.CONSOLE_APP_ID }}
+          private-key: ${{ secrets.CONSOLE_APP_PRIVATE_KEY }}
+          owner: device-management-toolkit
+          repositories: console
 
       - name: Setup Go
         uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff  # v5.6.0
@@ -65,7 +75,7 @@ jobs:
         with:
           repository: device-management-toolkit/console
           ref: redfish
-          token: ${{ secrets.CONSOLE_REPO_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           path: console
 
       - name: Copy generated artifacts into console tree
@@ -83,7 +93,7 @@ jobs:
         id: create-pr
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676  # v7.0.11
         with:
-          token: ${{ secrets.CONSOLE_REPO_TOKEN }}
+          token: ${{ steps.app-token.outputs.token }}
           path: console
           delete-branch: true  # clean up branch if PR is closed without merge
           commit-message: "chore(redfish): sync generated artifacts from redfish-tools"
