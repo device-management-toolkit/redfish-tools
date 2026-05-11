@@ -5,7 +5,7 @@ components:
       description: Empty JSON body for Redfish action invocation.
       properties: {}
       type: object
-    GenerateRedirectionTokenResponse:
+    OemIntelAmtGenerateRedirectionTokenResponse:
       additionalProperties: false
       description: The response payload containing a short-lived redirection token.
       properties:
@@ -362,6 +362,90 @@ paths:
               schema:
                 $ref: '#/components/schemas/RedfishError'
           description: Error condition
+  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/ComputerSystem.CancelKVMConsent:
+    parameters:
+    - description: The value of the Id property of the ComputerSystem resource
+      in: path
+      name: ComputerSystemId
+      required: true
+      schema:
+        type: string
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmptyActionRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedfishError'
+          description: The response contains the results of the CancelKVMConsent action
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedfishError'
+          description: Error condition
+  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/ComputerSystem.RequestKVMConsent:
+    parameters:
+    - description: The value of the Id property of the ComputerSystem resource
+      in: path
+      name: ComputerSystemId
+      required: true
+      schema:
+        type: string
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmptyActionRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedfishError'
+          description: The response contains the results of the RequestKVMConsent action
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedfishError'
+          description: Error condition
+  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/ComputerSystem.SubmitKVMConsentCode:
+    parameters:
+    - description: The value of the Id property of the ComputerSystem resource
+      in: path
+      name: ComputerSystemId
+      required: true
+      schema:
+        type: string
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: http://redfish.dmtf.org/schemas/v1/ComputerSystem.v1_26_0.yaml#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtSubmitKVMConsentCodeRequestBody
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedfishError'
+          description: The response contains the results of the SubmitKVMConsentCode action
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RedfishError'
+          description: Error condition
   /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/IntelComputerSystem.GenerateRedirectionToken:
     parameters:
     - description: The value of the Id property of the ComputerSystem resource
@@ -382,7 +466,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenerateRedirectionTokenResponse'
+                $ref: '#/components/schemas/OemIntelAmtGenerateRedirectionTokenResponse'
           description: The response contains a generated redirection token
         default:
           content:

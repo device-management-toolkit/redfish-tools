@@ -396,22 +396,6 @@ components:
       x-patternProperties:
         ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
           description: This property shall specify a valid odata or Redfish property.
-    ComputerSystem_v1_26_0_GenerateRedirectionToken:
-      additionalProperties: false
-      description: This action generates a short-lived redirection token.
-      properties:
-        target:
-          description: Link to invoke action
-          format: uri-reference
-          type: string
-        title:
-          description: Friendly action name
-          type: string
-      type: object
-      x-longDescription: This action shall generate a short-lived redirection token.
-      x-patternProperties:
-        ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
-          description: This property shall specify a valid odata or Redfish property.
     ComputerSystem_v1_26_0_GraphicalConnectTypesSupported:
       enum:
       - KVMIP
@@ -537,11 +521,96 @@ components:
       additionalProperties: true
       description: The available OEM-specific actions for this resource.
       properties:
+        '#ComputerSystem.CancelKVMConsent':
+          $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtCancelKVMConsent'
+        '#ComputerSystem.RequestKVMConsent':
+          $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtRequestKVMConsent'
+        '#ComputerSystem.SubmitKVMConsentCode':
+          $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtSubmitKVMConsentCode'
         '#IntelComputerSystem.GenerateRedirectionToken':
-          $ref: '#/components/schemas/ComputerSystem_v1_26_0_GenerateRedirectionToken'
+          $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtGenerateRedirectionToken'
       type: object
       x-longDescription: This type shall contain the available OEM-specific actions
         for this resource.
+      x-patternProperties:
+        ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
+          description: This property shall specify a valid odata or Redfish property.
+    ComputerSystem_v1_26_0_OemIntelAmtCancelKVMConsent:
+      additionalProperties: false
+      description: This action cancels a pending user consent request for KVM redirection.
+      properties:
+        target:
+          description: Link to invoke action
+          format: uri-reference
+          type: string
+        title:
+          description: Friendly action name
+          type: string
+      type: object
+      x-longDescription: This action shall cancel a pending user consent request for KVM redirection.
+      x-patternProperties:
+        ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
+          description: This property shall specify a valid odata or Redfish property.
+    ComputerSystem_v1_26_0_OemIntelAmtGenerateRedirectionToken:
+      additionalProperties: false
+      description: This action generates a short-lived redirection token.
+      properties:
+        target:
+          description: Link to invoke action
+          format: uri-reference
+          type: string
+        title:
+          description: Friendly action name
+          type: string
+      type: object
+      x-longDescription: This action shall generate a short-lived redirection token.
+      x-patternProperties:
+        ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
+          description: This property shall specify a valid odata or Redfish property.
+    ComputerSystem_v1_26_0_OemIntelAmtRequestKVMConsent:
+      additionalProperties: false
+      description: This action requests user consent for KVM redirection.
+      properties:
+        target:
+          description: Link to invoke action
+          format: uri-reference
+          type: string
+        title:
+          description: Friendly action name
+          type: string
+      type: object
+      x-longDescription: This action shall request user consent for KVM redirection.
+      x-patternProperties:
+        ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
+          description: This property shall specify a valid odata or Redfish property.
+    ComputerSystem_v1_26_0_OemIntelAmtSubmitKVMConsentCode:
+      additionalProperties: false
+      description: This action submits a user consent code for KVM redirection.
+      properties:
+        target:
+          description: Link to invoke action
+          format: uri-reference
+          type: string
+        title:
+          description: Friendly action name
+          type: string
+      type: object
+      x-longDescription: This action shall submit a user consent code for KVM redirection.
+      x-patternProperties:
+        ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
+          description: This property shall specify a valid odata or Redfish property.
+    ComputerSystem_v1_26_0_OemIntelAmtSubmitKVMConsentCodeRequestBody:
+      additionalProperties: false
+      description: This action submits a user consent code for KVM redirection.
+      properties:
+        ConsentCode:
+          description: The user consent code.
+          type: integer
+          x-longDescription: This parameter shall contain the user consent code for KVM redirection.
+      required:
+      - ConsentCode
+      type: object
+      x-longDescription: This action shall submit a user consent code for KVM redirection.
       x-patternProperties:
         ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
           description: This property shall specify a valid odata or Redfish property.
