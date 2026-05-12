@@ -1,25 +1,5 @@
 components:
   schemas:
-    EmptyActionRequest:
-      additionalProperties: false
-      description: Empty JSON body for Redfish action invocation.
-      properties: {}
-      type: object
-    OemIntelAmtGenerateRedirectionTokenResponse:
-      additionalProperties: false
-      description: The response payload containing a short-lived redirection token.
-      properties:
-        ExpirationTime:
-          description: The token expiration time in RFC3339 format.
-          format: date-time
-          type: string
-        RedirectionToken:
-          description: A short-lived token used for WebSocket redirection authentication.
-          type: string
-      required:
-      - RedirectionToken
-      - ExpirationTime
-      type: object
     RedfishError:
       description: The error payload from a Redfish service.
       properties:
@@ -375,7 +355,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmptyActionRequest'
+              $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtCancelKVMConsentRequestBody'
         required: true
       responses:
         '200':
@@ -403,7 +383,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmptyActionRequest'
+              $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtRequestKVMConsentRequestBody'
         required: true
       responses:
         '200':
@@ -431,7 +411,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: http://redfish.dmtf.org/schemas/v1/ComputerSystem.v1_26_0.yaml#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtSubmitKVMConsentCodeRequestBody
+              $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtSubmitKVMConsentCodeRequestBody'
         required: true
       responses:
         '200':
@@ -459,14 +439,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmptyActionRequest'
+              $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtGenerateRedirectionTokenRequestBody'
         required: true
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OemIntelAmtGenerateRedirectionTokenResponse'
+                $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtGenerateRedirectionTokenResponse'
           description: The response contains a generated redirection token
         default:
           content:
