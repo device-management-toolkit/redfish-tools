@@ -342,7 +342,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RedfishError'
           description: Error condition
-  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/ComputerSystem.CancelKVMConsent:
+  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/IntelComputerSystem.CancelKVMConsent:
     parameters:
     - description: The value of the Id property of the ComputerSystem resource
       in: path
@@ -370,7 +370,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RedfishError'
           description: Error condition
-  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/ComputerSystem.RequestKVMConsent:
+  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/IntelComputerSystem.RequestKVMConsent:
     parameters:
     - description: The value of the Id property of the ComputerSystem resource
       in: path
@@ -398,7 +398,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RedfishError'
           description: Error condition
-  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/ComputerSystem.SubmitKVMConsentCode:
+  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/IntelComputerSystem.SubmitKVMConsentCode:
     parameters:
     - description: The value of the Id property of the ComputerSystem resource
       in: path
