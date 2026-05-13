@@ -8,9 +8,12 @@ components:
           $ref: '#/components/schemas/ComputerSystem_v1_26_0_Reset'
         Oem:
           $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemActions'
-          description: The available OEM-specific actions for this resource.
-          x-longDescription: This property shall contain the available OEM-specific
-            actions for this resource.
+          description: The OEM extensions for the graphical console, including Intel
+            AMT-specific KVM options.
+          x-longDescription: This property shall contain OEM extensions for the graphical
+            console service. Intel AMT implementations shall populate the `Intel.AMT`
+            nested object with `ControlMode`, `KVMStatus`, and `UserConsentStatus`
+            properties, all of which are writable via PATCH.
       type: object
       x-longDescription: This type shall contain the available actions for this resource.
       x-patternProperties:
@@ -592,10 +595,12 @@ components:
         ExpirationTime:
           description: The token expiration time in RFC3339 format.
           format: date-time
+          readOnly: true
           type: string
           x-longDescription: This property shall contain the expiration time of the redirection token.
         RedirectionToken:
           description: A short-lived token used for WebSocket redirection authentication.
+          readOnly: true
           type: string
           x-longDescription: This property shall contain a short-lived JWT token for KVM console redirection.
       required:
