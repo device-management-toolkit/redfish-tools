@@ -511,6 +511,14 @@ components:
             inbound access' clause of the Redfish Specification.  Services shall send
             WebSocket packetized bytes in a manner that emulates a pty (pseudoterminal).
           x-versionAdded: v1_26_0
+        Oem:
+          $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemSerialConsole'
+          description: The OEM extensions for the serial console, including Intel AMT-specific
+            SOL options.
+          x-longDescription: This property shall contain OEM extensions for the serial
+            console service. Intel AMT implementations shall populate the `Intel.AMT`
+            nested object with `ControlMode`, `SOLStatus`, and `UserConsentStatus`
+            properties, all of which are read-only.
       type: object
       x-longDescription: This type shall describe the serial console services for
         a computer system.
@@ -686,12 +694,12 @@ components:
           $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtSubmitKVMConsentCode'
         '#Oem.Intel.AMT.GenerateRedirectionToken':
           $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtGenerateRedirectionToken'
-        '#Oem.Intel.AMT.CancelSOLConsent':
-          $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtCancelSOLConsent'
-        '#Oem.Intel.AMT.RequestSOLConsent':
-          $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtRequestSOLConsent'
-        '#Oem.Intel.AMT.SubmitSOLConsentCode':
-          $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtSubmitSOLConsentCode'
+        '#Oem.Intel.AMT.CancelSolConsent':
+          $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtCancelSolConsent'
+        '#Oem.Intel.AMT.RequestSolConsent':
+          $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtRequestSolConsent'
+        '#Oem.Intel.AMT.SubmitSolConsentCode':
+          $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtSubmitSolConsentCode'
       type: object
       x-longDescription: This type shall contain the available OEM-specific actions
         for this resource.
@@ -847,6 +855,107 @@ components:
       x-patternProperties:
         ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
           description: This property shall specify a valid odata or Redfish property.
+    ComputerSystem_v1_26_0_OemSerialConsole:
+      additionalProperties: false
+      description: OEM extensions for the serial console service.
+      properties:
+        Intel:
+          $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelSerialConsole'
+          description: Intel OEM extensions for the serial console.
+          x-longDescription: This property shall contain Intel-specific OEM extensions
+            for the serial console service.
+      type: object
+      x-longDescription: This type shall contain OEM extensions for the serial console
+        service of a computer system.
+      x-patternProperties:
+        ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
+          description: This property shall specify a valid odata or Redfish property.
+    ComputerSystem_v1_26_0_OemIntelSerialConsole:
+      additionalProperties: false
+      description: Intel-specific OEM extensions for the serial console service.
+      properties:
+        AMT:
+          $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAMTSerialConsole'
+          description: Intel AMT-specific SOL options for the serial console.
+          x-longDescription: This property shall contain Intel AMT-specific SOL options
+            for the serial console service.
+      type: object
+      x-longDescription: This type shall contain Intel-specific OEM extensions for
+        the serial console service of a computer system.
+      x-patternProperties:
+        ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
+          description: This property shall specify a valid odata or Redfish property.
+    ComputerSystem_v1_26_0_OemIntelAMTSerialConsole:
+      additionalProperties: false
+      description: Intel AMT-specific SOL options for the serial console service.
+      properties:
+        ControlMode:
+          description: The Intel AMT provisioning control mode of the device.
+          oneOf:
+          - $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAMTControlMode'
+          - enum:
+            - null
+          readOnly: true
+          x-longDescription: This property shall contain the Intel AMT provisioning
+            control mode of the device. This value is determined during AMT device
+            provisioning and cannot be changed through this interface.
+        SOLStatus:
+          description: The current operational status of the SOL redirection service.
+          oneOf:
+          - $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAMTSOLStatus'
+          - enum:
+            - null
+          readOnly: true
+          x-longDescription: This property shall contain the current operational status
+            of the SOL redirection service on the AMT device, derived from WS-Man
+            queries to `AMT_RedirectionService` and related services. To enable or
+            disable the SOL service, use the `ServiceEnabled` property in `SerialConsole.WebSocket`.
+        UserConsentStatus:
+          description: The current user consent status for SOL access.
+          oneOf:
+          - $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAMTUserConsentStatus'
+          - enum:
+            - null
+          readOnly: true
+          x-longDescription: This property shall contain the current user consent
+            status for SOL access on the AMT device. This value is managed exclusively
+            through the `#Oem.Intel.AMT.RequestSolConsent`, `#Oem.Intel.AMT.SubmitSolConsentCode`,
+            and `#Oem.Intel.AMT.CancelSolConsent` actions.
+      type: object
+      x-longDescription: This type shall contain Intel AMT-specific SOL options for
+        the serial console service.
+      x-patternProperties:
+        ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
+          description: This property shall specify a valid odata or Redfish property.
+    ComputerSystem_v1_26_0_OemIntelAMTSOLStatus:
+      description: The current operational status of the SOL redirection service on
+        the Intel AMT device.
+      enum:
+      - Disabled
+      - Enabled
+      - Active
+      - PendingConsent
+      - Error
+      type: string
+      x-enumDescriptions:
+        Active: A SOL redirection session is currently active and streaming.
+        Disabled: The SOL redirection service is disabled on the AMT device.
+        Enabled: The SOL redirection service is enabled and ready to accept connections.
+        Error: The SOL service is in an error state.
+        PendingConsent: The SOL session is waiting for explicit user consent on the
+          target device.
+      x-enumLongDescriptions:
+        Active: This value shall indicate that a SOL redirection session is currently
+          active between a remote client and the AMT device.
+        Disabled: This value shall indicate that the SOL redirection service is not
+          enabled on the AMT device.
+        Enabled: This value shall indicate that the SOL redirection service is enabled
+          and ready to accept connections, but no session is currently active.
+        Error: This value shall indicate that the SOL service encountered an error
+          and is not operational.
+        PendingConsent: This value shall indicate that a SOL redirection request has
+          been issued and the service is awaiting explicit acceptance from the local
+          user on the target device.
     ComputerSystem_v1_26_0_OemIntelAmtCancelKVMConsent:
       additionalProperties: false
       description: This action cancels a pending user consent request for KVM redirection.
@@ -977,7 +1086,7 @@ components:
       x-patternProperties:
         ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
           description: This property shall specify a valid odata or Redfish property.
-    ComputerSystem_v1_26_0_OemIntelAmtCancelSOLConsent:
+    ComputerSystem_v1_26_0_OemIntelAmtCancelSolConsent:
       additionalProperties: false
       description: This action cancels a pending user consent request for Serial-over-LAN redirection.
       properties:
@@ -993,7 +1102,7 @@ components:
       x-patternProperties:
         ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
           description: This property shall specify a valid odata or Redfish property.
-    ComputerSystem_v1_26_0_OemIntelAmtCancelSOLConsentRequestBody:
+    ComputerSystem_v1_26_0_OemIntelAmtCancelSolConsentRequestBody:
       additionalProperties: false
       description: This action cancels a pending user consent request for Serial-over-LAN redirection.
       properties: {}
@@ -1002,7 +1111,7 @@ components:
       x-patternProperties:
         ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
           description: This property shall specify a valid odata or Redfish property.
-    ComputerSystem_v1_26_0_OemIntelAmtRequestSOLConsent:
+    ComputerSystem_v1_26_0_OemIntelAmtRequestSolConsent:
       additionalProperties: false
       description: This action requests user consent for Serial-over-LAN redirection.
       properties:
@@ -1018,7 +1127,7 @@ components:
       x-patternProperties:
         ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
           description: This property shall specify a valid odata or Redfish property.
-    ComputerSystem_v1_26_0_OemIntelAmtRequestSOLConsentRequestBody:
+    ComputerSystem_v1_26_0_OemIntelAmtRequestSolConsentRequestBody:
       additionalProperties: false
       description: This action requests user consent for Serial-over-LAN redirection.
       properties: {}
@@ -1027,7 +1136,7 @@ components:
       x-patternProperties:
         ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
           description: This property shall specify a valid odata or Redfish property.
-    ComputerSystem_v1_26_0_OemIntelAmtSubmitSOLConsentCode:
+    ComputerSystem_v1_26_0_OemIntelAmtSubmitSolConsentCode:
       additionalProperties: false
       description: This action submits a user consent code for Serial-over-LAN redirection.
       properties:
@@ -1043,7 +1152,7 @@ components:
       x-patternProperties:
         ^([a-zA-Z_][a-zA-Z0-9_]*)?@(odata|Redfish|Message)\.[a-zA-Z_][a-zA-Z0-9_]*$:
           description: This property shall specify a valid odata or Redfish property.
-    ComputerSystem_v1_26_0_OemIntelAmtSubmitSOLConsentCodeRequestBody:
+    ComputerSystem_v1_26_0_OemIntelAmtSubmitSolConsentCodeRequestBody:
       additionalProperties: false
       description: This action submits a user consent code for Serial-over-LAN redirection.
       properties:

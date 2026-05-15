@@ -454,7 +454,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RedfishError'
           description: Error condition
-  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/IntelComputerSystem.CancelSOLConsent:
+  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/IntelComputerSystem.CancelSolConsent:
     parameters:
     - description: The value of the Id property of the ComputerSystem resource
       in: path
@@ -467,7 +467,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtCancelSOLConsentRequestBody'
+              $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtCancelSolConsentRequestBody'
         required: true
       responses:
         '200':
@@ -475,14 +475,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RedfishError'
-          description: The response contains the results of the CancelSOLConsent action
+          description: The response contains the results of the CancelSolConsent action
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RedfishError'
           description: Error condition
-  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/IntelComputerSystem.RequestSOLConsent:
+  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/IntelComputerSystem.RequestSolConsent:
     parameters:
     - description: The value of the Id property of the ComputerSystem resource
       in: path
@@ -495,7 +495,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtRequestSOLConsentRequestBody'
+              $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtRequestSolConsentRequestBody'
         required: true
       responses:
         '200':
@@ -503,14 +503,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RedfishError'
-          description: The response contains the results of the RequestSOLConsent action
+          description: The response contains the results of the RequestSolConsent action
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/RedfishError'
           description: Error condition
-  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/IntelComputerSystem.SubmitSOLConsentCode:
+  /redfish/v1/Systems/{ComputerSystemId}/Actions/Oem/IntelComputerSystem.SubmitSolConsentCode:
     parameters:
     - description: The value of the Id property of the ComputerSystem resource
       in: path
@@ -523,7 +523,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtSubmitSOLConsentCodeRequestBody'
+              $ref: '#/components/schemas/ComputerSystem_v1_26_0_OemIntelAmtSubmitSolConsentCodeRequestBody'
         required: true
       responses:
         '200':
@@ -531,7 +531,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RedfishError'
-          description: The response contains the results of the SubmitSOLConsentCode action
+          description: The response contains the results of the SubmitSolConsentCode action
         default:
           content:
             application/json:
